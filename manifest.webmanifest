@@ -1,7 +1,7 @@
 {
   "name": "Moto + Bivouac",
   "short_name": "Moto Bivouac",
-  "description": "Checklist moto et bivouac avec plusieurs sorties.",
+  "description": "Checklist Voyage Moto + Bivouac",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

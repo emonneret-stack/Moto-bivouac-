@@ -1,0 +1,1 @@
+Moto + Bivouac PWA v2 — publier sur HTTPS (ex. GitHub Pages).

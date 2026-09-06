@@ -1,165 +1,53 @@
-<!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111111">
-<meta name="description" content="Checklist Moto + Bivouac — plusieurs sorties, sauvegarde locale et fonctionnement hors ligne">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon-192.png">
-<title>Moto + Bivouac</title>
+<!doctype html><html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111111"><meta name="description" content="Checklist Voyage Moto + Bivouac">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icons/icon-192.png"><title>Moto + Bivouac</title>
 <style>
-:root{--bg:#0e0f10;--card:#17191b;--card2:#202326;--text:#f3f3f3;--muted:#a7adb3;--accent:#ffb000;--danger:#ff5b5b;--border:#2c3034}
+:root{--bg:#0e0f10;--card:#17191b;--card2:#202326;--text:#f3f3f3;--muted:#a7adb3;--accent:#ffb000;--border:#2c3034;--danger:#ff5b5b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-body{padding-bottom:30px}.top{position:sticky;top:0;z-index:10;background:rgba(14,15,16,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:12px 12px 10px}
-h1{font-size:21px;margin:0 0 10px}.row{display:flex;gap:8px;align-items:center}.grow{flex:1}
-select,input,button{font:inherit;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);padding:10px}
+body{padding-bottom:30px}.top{position:sticky;top:0;z-index:10;background:rgba(14,15,16,.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:12px}
+h1{font-size:20px;margin:0 0 10px}.row{display:flex;gap:7px;align-items:center}.grow{flex:1}
+select,input,button{font:inherit;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);padding:9px}
 select{width:100%}button{cursor:pointer;background:var(--card2)}button.primary{background:var(--accent);color:#111;border-color:var(--accent);font-weight:700}
-button.danger{color:#fff;background:#5a2020;border-color:#7d3030}.small{font-size:13px;padding:7px 9px}
+button.danger{background:#542020;color:#fff;border-color:#773030}.small{font-size:13px;padding:7px 9px}.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
 .progress{height:8px;background:#292d30;border-radius:20px;overflow:hidden;margin-top:10px}.bar{height:100%;width:0;background:var(--accent);transition:.2s}
-.stats{font-size:12px;color:var(--muted);margin-top:6px}.wrap{max-width:760px;margin:auto;padding:12px}
+.stats{font-size:12px;color:var(--muted);margin-top:6px}.wrap{max-width:780px;margin:auto;padding:12px}
 .cat{background:var(--card);border:1px solid var(--border);border-radius:14px;margin:10px 0;overflow:hidden}
-.cathead{display:flex;align-items:center;gap:8px;padding:11px 12px;background:var(--card2)}.cathead strong{flex:1}
-.items{padding:5px 10px 9px}.item{display:flex;align-items:center;gap:9px;padding:9px 2px;border-bottom:1px solid #292d30}.item:last-child{border-bottom:0}
-.item input[type=checkbox]{width:21px;height:21px;accent-color:var(--accent);flex:none}.item span{flex:1;min-width:0;word-break:break-word}.checked{color:var(--muted);text-decoration:line-through}
-.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.empty{text-align:center;color:var(--muted);padding:30px 10px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:flex-end;z-index:20}.modal.show{display:flex}.sheet{background:#151719;border-top:1px solid var(--border);width:100%;padding:18px;border-radius:18px 18px 0 0}.sheet h2{margin-top:0;font-size:18px}.sheet input{width:100%;margin:7px 0 12px}
+.cathead{display:flex;align-items:center;gap:7px;padding:11px;background:var(--card2)}.cathead strong{flex:1}
+.items{padding:5px 10px 9px}.item{display:flex;align-items:center;gap:8px;padding:8px 2px;border-bottom:1px solid #292d30}.item:last-child{border-bottom:0}
+.item input[type=checkbox]{width:21px;height:21px;accent-color:var(--accent);flex:none}.item span{flex:1;word-break:break-word}.checked{color:var(--muted);text-decoration:line-through}
 .install{display:none;margin:10px 0;padding:10px;border:1px solid #5b481d;background:#2b2412;border-radius:12px;font-size:13px}
-.install button{margin-top:7px}.footer{text-align:center;color:#737a80;font-size:11px;margin:18px}
-</style>
-</head>
-<body>
-<header class="top">
-  <h1>🏍️ Moto + Bivouac</h1>
-  <div class="row">
-    <select id="outingSelect" class="grow"></select>
-    <button class="small primary" id="newBtn">＋</button>
-  </div>
-  <div class="row actions">
-    <button class="small" id="renameBtn">Renommer</button>
-    <button class="small" id="duplicateBtn">Dupliquer</button>
-    <button class="small" id="resetBtn">Tout décocher</button>
-    <button class="small danger" id="deleteBtn">🗑</button>
-  </div>
-  <div class="progress"><div class="bar" id="bar"></div></div>
-  <div class="stats" id="stats"></div>
-</header>
-
-<main class="wrap">
-  <div id="installBox" class="install">
-    <strong>📱 Installer sur l'écran d'accueil</strong><br>
-    Cette application peut être installée comme une PWA.
-    <div><button class="small primary" id="installBtn">Installer</button></div>
-  </div>
-  <div id="app"></div>
-</main>
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:flex-end;z-index:30}.modal.show{display:flex}.sheet{width:100%;background:#151719;border-top:1px solid var(--border);border-radius:18px 18px 0 0;padding:18px}.sheet h2{margin:0 0 10px;font-size:18px}.sheet input{width:100%;margin-bottom:10px}
+.footer{text-align:center;color:#737a80;font-size:11px;margin:18px}
+</style></head><body>
+<header class="top"><h1>🏍️ CHECKLIST VOYAGE MOTO + BIVOUAC 🏕️</h1>
+<div class="row"><select id="outingSelect" class="grow"></select><button class="small primary" id="newBtn">＋</button></div>
+<div class="actions"><button class="small" id="renameBtn">Renommer</button><button class="small" id="duplicateBtn">Dupliquer</button>
+<button class="small" id="upBtn">↑ Liste</button><button class="small" id="downBtn">↓ Liste</button><button class="small" id="resetBtn">Tout décocher</button><button class="small danger" id="deleteBtn">🗑</button></div>
+<div class="progress"><div class="bar" id="bar"></div></div><div class="stats" id="stats"></div></header>
+<main class="wrap"><div id="installBox" class="install"><strong>📱 Installer sur l'écran d'accueil</strong><br>Cette application peut être installée comme une PWA.<br><button class="small primary" id="installBtn">Installer</button></div><div id="app"></div></main>
 <div class="footer">Données enregistrées sur ce téléphone • fonctionnement hors ligne</div>
-
-<div class="modal" id="modal">
-  <div class="sheet">
-    <h2 id="modalTitle"></h2>
-    <input id="modalInput" autocomplete="off">
-    <div class="row">
-      <button class="grow" id="cancelModal">Annuler</button>
-      <button class="grow primary" id="okModal">Valider</button>
-    </div>
-  </div>
-</div>
-
+<div class="modal" id="modal"><div class="sheet"><h2 id="modalTitle"></h2><input id="modalInput" autocomplete="off"><div class="row"><button class="grow" id="cancelModal">Annuler</button><button class="grow primary" id="okModal">Valider</button></div></div></div>
 <script>
-const KEY="moto-multisorties-pwa-v1";
-const DEFAULT=[
-["📄 Papiers & essentiels",["Permis de conduire","Carte grise","Assurance moto","Pièce d'identité","Carte bancaire / espèces","Téléphone + câble","Batterie externe","Clés de la moto"]],
-["🏍️ Moto & équipement",["Casque","Gants","Veste moto","Pantalon moto","Bottes / chaussures moto","Protection dorsale","Antivol","Kit réparation crevaison","Pompe / compresseur","Kit outils","Lubrifiant chaîne","Sangles / tendeurs","Pansement / chiffon","Bouteille d'eau pour la moto"]],
-["🏕️ Bivouac",["Tente","Arceaux + sardines","Sac de couchage","Matelas","Oreiller","Lampe frontale","Lampe / éclairage","Chaises / siège","Serviette microfibre","Sac poubelle","Corde / ficelle","Trousse de toilette"]],
-["🔥 Cuisine & eau",["Réchaud","Cartouche de gaz","Briquet / allumettes","Popote","Gobelet","Couverts","Éponge","Liquide vaisselle","Bouteilles d'eau","Filtre à eau / pastilles","Thermos"]],
-["⚖️ Avant de partir",["Pression pneus","Niveau huile","Niveau liquide de refroidissement","Graissage chaîne","État plaquettes de frein","Éclairage / clignotants","Batterie","Plein d'essence","Vérifier météo","Vérifier itinéraire / routes","Prévenir un proche de l'itinéraire"]],
-["🧭 Navigation & sécurité",["Téléphone chargé","GPS / support téléphone","Câble GPS","Carte hors ligne","Trace GPX","Intercom","Gilet réfléchissant","Trousse de premiers secours","Numéros d'urgence enregistrés"]],
-["👕 Vêtements",["Sous-vêtements","Chaussettes","T-shirts","Pantalon léger","Pull / polaire","Veste pluie","Pantalon pluie","Maillot de bain","Casquette / bonnet","Vêtements pour dormir"]],
-["🌧️ Protection & sacs",["Housse de pluie","Sacs étanches","Sac poubelle renforcé","Housses pour chaussures","Filet / sangles supplémentaires"]],
-["🍽️ Nourriture",["Petit-déjeuner","Repas midi","Repas soir","Barres / encas","Café / thé","Sel / poivre / condiments"]],
-["🧴 Divers",["Lunettes de soleil","Crème solaire","Lunettes de vue / étui","Papier toilette","Lingettes","Gel hydroalcoolique","Chargeur secteur","Multiprise / adaptateur","Petite trousse couture"]]
-];
-
-let state=load();
-let deferredPrompt=null;
-const $=id=>document.getElementById(id);
-
-function makeOuting(name){
-  return {id:crypto.randomUUID(),name,cats:DEFAULT.map(([n,items])=>({id:crypto.randomUUID(),name:n,items:items.map(t=>({id:crypto.randomUUID(),text:t,done:false}))}))};
-}
-function load(){
-  try{
-    const s=JSON.parse(localStorage.getItem(KEY));
-    if(s&&s.outings?.length) return s;
-  }catch(e){}
-  const o=makeOuting("Sortie 1");
-  return {outings:[o],active:o.id};
-}
-function save(){localStorage.setItem(KEY,JSON.stringify(state))}
-function active(){return state.outings.find(o=>o.id===state.active)||state.outings[0]}
-function renderSelect(){
-  const s=$("outingSelect");s.innerHTML="";
-  state.outings.forEach(o=>{const op=document.createElement("option");op.value=o.id;op.textContent=o.name;s.appendChild(op)});
-  s.value=active().id;
-}
-function updateProgress(){
-  const o=active(), all=o.cats.flatMap(c=>c.items), done=all.filter(i=>i.done).length, total=all.length, pct=total?Math.round(done/total*100):0;
-  $("bar").style.width=pct+"%";$("stats").textContent=`${done} / ${total} éléments cochés • ${pct}%`;
-}
-function render(){
-  renderSelect(); updateProgress();
-  const o=active(), root=$("app");root.innerHTML="";
-  o.cats.forEach(c=>{
-    const box=document.createElement("section");box.className="cat";
-    const head=document.createElement("div");head.className="cathead";
-    const title=document.createElement("strong");title.textContent=c.name;
-    const collapse=document.createElement("button");collapse.className="small";collapse.textContent="▾";
-    const edit=document.createElement("button");edit.className="small";edit.textContent="✎";
-    const del=document.createElement("button");del.className="small danger";del.textContent="🗑";
-    head.append(title,collapse,edit,del);box.appendChild(head);
-    const items=document.createElement("div");items.className="items";
-    c.items.forEach(it=>{
-      const row=document.createElement("div");row.className="item";
-      const cb=document.createElement("input");cb.type="checkbox";cb.checked=it.done;
-      const span=document.createElement("span");span.textContent=it.text;if(it.done)span.className="checked";
-      const e=document.createElement("button");e.className="small";e.textContent="✎";
-      const d=document.createElement("button");d.className="small danger";d.textContent="×";
-      cb.onchange=()=>{it.done=cb.checked;save();render()};
-      e.onclick=()=>ask("Modifier l'élément",it.text,v=>{if(v.trim()){it.text=v.trim();save();render()}});
-      d.onclick=()=>{c.items=c.items.filter(x=>x.id!==it.id);save();render()};
-      row.append(cb,span,e,d);items.appendChild(row);
-    });
-    const add=document.createElement("button");add.className="small";add.textContent="＋ Ajouter un élément";
-    add.onclick=()=>ask("Nouvel élément","",v=>{if(v.trim()){c.items.push({id:crypto.randomUUID(),text:v.trim(),done:false});save();render()}});
-    items.appendChild(add);
-    edit.onclick=()=>ask("Modifier la catégorie",c.name,v=>{if(v.trim()){c.name=v.trim();save();render()}});
-    del.onclick=()=>{if(confirm("Supprimer cette catégorie et ses éléments ?")){o.cats=o.cats.filter(x=>x.id!==c.id);save();render()}};
-    collapse.onclick=()=>{items.style.display=items.style.display==="none"?"":"none";collapse.textContent=items.style.display==="none"?"▸":"▾"};
-    box.appendChild(items);root.appendChild(box);
-  });
-  const addCat=document.createElement("button");addCat.className="primary";addCat.style.width="100%";addCat.textContent="＋ Ajouter une catégorie";
-  addCat.onclick=()=>ask("Nouvelle catégorie","",v=>{if(v.trim()){o.cats.push({id:crypto.randomUUID(),name:v.trim(),items:[]});save();render()}});
-  root.appendChild(addCat);
-}
-function ask(title,value,cb){
-  $("modalTitle").textContent=title;$("modalInput").value=value||"";$("modal").classList.add("show");$("modalInput").focus();
-  const done=()=>{$("modal").classList.remove("show");cb($("modalInput").value)};
-  $("okModal").onclick=done;$("cancelModal").onclick=()=>$("modal").classList.remove("show");
-  $("modalInput").onkeydown=e=>{if(e.key==="Enter")done();if(e.key==="Escape")$("modal").classList.remove("show")};
-}
-$("outingSelect").onchange=e=>{state.active=e.target.value;save();render()};
-$("newBtn").onclick=()=>ask("Nom de la nouvelle sortie","Sortie "+(state.outings.length+1),v=>{if(v.trim()){const o=makeOuting(v.trim());state.outings.push(o);state.active=o.id;save();render()}});
-$("renameBtn").onclick=()=>ask("Renommer la sortie",active().name,v=>{if(v.trim()){active().name=v.trim();save();render()}});
-$("duplicateBtn").onclick=()=>{const src=active();const copy=JSON.parse(JSON.stringify(src));copy.id=crypto.randomUUID();copy.name=src.name+" – copie";copy.cats.forEach(c=>{c.id=crypto.randomUUID();c.items.forEach(i=>{i.id=crypto.randomUUID();i.done=false})});state.outings.push(copy);state.active=copy.id;save();render()};
-$("resetBtn").onclick=()=>{if(confirm("Tout décocher dans cette sortie ?")){active().cats.forEach(c=>c.items.forEach(i=>i.done=false));save();render()}};
-$("deleteBtn").onclick=()=>{if(state.outings.length===1){alert("Il faut conserver au moins une sortie.");return} if(confirm("Supprimer cette sortie ?")){state.outings=state.outings.filter(o=>o.id!==state.active);state.active=state.outings[0].id;save();render()}};
-
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;$("installBox").style.display="block"});
-$("installBtn").onclick=async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$("installBox").style.display="none"};
-window.addEventListener("appinstalled",()=>{$("installBox").style.display="none"});
-if("serviceWorker" in navigator) window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.error));
-render();
-</script>
-</body>
-</html>
+const KEY="moto-multisorties-pwa-v2", DEFAULT_SECTIONS=[["⚖️ AVANT DE PARTIR", ["Révision moto (pneus, freins, niveaux, pression)", "Test du matériel, éclairage, batterie ...", "Itinéraire approximatif", "Plein d'essence", "Vérif météo"]], ["📄 PAPIERS & ESSENTIELS", ["Permis de conduire", "Carte grise", "Assurance (carte verte)", "Carte bancaire + un peu de cash", "Carte d'identité / passeport"]], ["🧭 NAVIGATION", ["Téléphone + GPS offline", "Batterie externe", "Carte papier", "Carte hors ligne", "Trace GPX"]], ["🧳 ÉQUIPEMENT MOTO", ["Câble chargeur USB moto", "Support téléphone / GPS", "Antivol de vélo (pour casque)", "Antivol / bloc disque", "Valises et sacs de transport", "Filets élastiques", "Sangles / tendeurs"]], ["🔧 OUTILLAGE & ENTRETIEN MOTO", ["Outils de base", "Booster / batterie externe", "Couteau / multi-outil", "Kit réparation crevaison", "Mini compresseur", "Bombe anti-crevaison", "Lubrifiant chaîne", "Chiffon", "Jerricane d'essence ?"]], ["🏕️ BIVOUAC", ["Tente", "Sac de couchage", "Matelas", "Oreiller", "Patch de réparation matelas", "Lampe frontale", "Bâche / protection sol", "Couverture de survie", "Tapis de pique-nique / bâche", "Chaise pliante très compacte", "Adaptateur camping", "Petite rallonge"]], ["🔥 CUISINE & EAU", ["Réchaud + gaz", "Popote / couverts", "Briquet + allumettes", "Gourde isotherme / poche à eau", "Gourde filtrante", "Gobelet / couverts", "Liquide vaisselle", "Éponge"]], ["🍽️ NOURRITURE", ["Repas simples (pâtes, riz...)", "Repas déshydratés", "Thé / chocolat", "Petit déjeuner", "Barres céréales, fruits secs", "Épices (sel, poivre, etc.)", "Conserves (sardines, maquereau ...)"]], ["🩹 SÉCURITÉ", ["Numéro d'urgence pays", "Trousse de secours", "Pansements (classiques + ampoules)", "Compresses stériles", "Désinfectant", "Bande / strap", "Antalgiques (paracétamol, ibuprofène)", "Traitement allergique ou autre", "Aspi-venin", "Pince à tiques", "Ciseaux", "Gants jetables"]], ["🦺 ÉQUIPEMENT MOTARD", ["Casque", "Gants", "Veste / pantalon moto", "Combinaison de pluie", "Gilet jaune", "Bottes / chaussures", "Bouchons d'oreilles"]], ["👕 VÊTEMENTS", ["Sous-vêtements", "Chaussettes", "T-shirt / pantalon", "Polaire / doudoune", "Vêtements légers", "Chaussures légères", "Bonnet / gants", "Lunettes de soleil", "Lunettes de vue", "Casquette", "Serviette microfibre"]], ["🧴 HYGIÈNE", ["Papier toilette", "Gel douche", "Lingettes", "Crème solaire", "Anti-moustiques", "Brosse à dents + hygiène"]], ["🌧️ PROTECTION & SACS", ["Sacs étanches pour vêtements", "Housse pluie"]], ["📦 DIVERS", ["Douche solaire", "Sac poubelle", "Lingettes pour visière", "Chargeur secteur"]]];
+const uid=()=>crypto.randomUUID(), $=id=>document.getElementById(id);
+function makeOuting(name){return{id:uid(),name,cats:DEFAULT_SECTIONS.map(([n,its])=>({id:uid(),name:n,items:its.map(t=>({id:uid(),text:t,done:false}))}))}}
+function load(){try{let s=JSON.parse(localStorage.getItem(KEY));if(s&&s.outings?.length)return s}catch(e){}let o=makeOuting("Sortie 1");return{outings:[o],active:o.id}}
+let state=load(), deferredPrompt=null; const active=()=>state.outings.find(o=>o.id===state.active)||state.outings[0]; const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
+function renderSelect(){let s=$("outingSelect");s.innerHTML="";state.outings.forEach((o,i)=>{let op=document.createElement("option");op.value=o.id;op.textContent=(i+1)+". "+o.name;s.append(op)});s.value=active().id}
+function progress(){let a=active(),its=a.cats.flatMap(c=>c.items),d=its.filter(i=>i.done).length,t=its.length,p=t?Math.round(d/t*100):0;$("bar").style.width=p+"%";$("stats").textContent=`${d} / ${t} éléments cochés • ${p}%`}
+function ask(title,value,cb){$("modalTitle").textContent=title;$("modalInput").value=value||"";$("modal").classList.add("show");$("modalInput").focus();const ok=()=>{$("modal").classList.remove("show");cb($("modalInput").value)};$("okModal").onclick=ok;$("cancelModal").onclick=()=>$("modal").classList.remove("show");$("modalInput").onkeydown=e=>{if(e.key==="Enter")ok();if(e.key==="Escape")$("modal").classList.remove("show")}}
+function render(){renderSelect();progress();let o=active(),root=$("app");root.innerHTML="";
+o.cats.forEach((c,ci)=>{let box=document.createElement("section");box.className="cat";let h=document.createElement("div");h.className="cathead";let title=document.createElement("strong");title.textContent=c.name;let col=document.createElement("button");col.className="small";col.textContent="▾";let ed=document.createElement("button");ed.className="small";ed.textContent="✎";let de=document.createElement("button");de.className="small danger";de.textContent="🗑";h.append(title,col,ed,de);box.append(h);
+let items=document.createElement("div");items.className="items";c.items.forEach((it,ii)=>{let row=document.createElement("div");row.className="item";let cb=document.createElement("input");cb.type="checkbox";cb.checked=it.done;let sp=document.createElement("span");sp.textContent=it.text;if(it.done)sp.className="checked";let e=document.createElement("button");e.className="small";e.textContent="✎";let d=document.createElement("button");d.className="small danger";d.textContent="×";cb.onchange=()=>{it.done=cb.checked;save();render()};e.onclick=()=>ask("Modifier l'élément",it.text,v=>{if(v.trim()){it.text=v.trim();save();render()}});d.onclick=()=>{c.items.splice(ii,1);save();render()};row.append(cb,sp,e,d);items.append(row)});
+let add=document.createElement("button");add.className="small";add.textContent="＋ Ajouter un élément";add.onclick=()=>ask("Nouvel élément","",v=>{if(v.trim()){c.items.push({id:uid(),text:v.trim(),done:false});save();render()}});items.append(add);
+col.onclick=()=>{items.style.display=items.style.display==="none"?"":"none";col.textContent=items.style.display==="none"?"▸":"▾"};ed.onclick=()=>ask("Modifier la catégorie",c.name,v=>{if(v.trim()){c.name=v.trim();save();render()}});de.onclick=()=>{if(confirm("Supprimer cette catégorie et ses éléments ?")){o.cats.splice(ci,1);save();render()}};box.append(items);root.append(box)});
+let ac=document.createElement("button");ac.className="primary";ac.style.width="100%";ac.textContent="＋ Ajouter une catégorie";ac.onclick=()=>ask("Nouvelle catégorie","",v=>{if(v.trim()){o.cats.push({id:uid(),name:v.trim(),items:[]});save();render()}});root.append(ac)}
+function moveOuting(dir){let i=state.outings.findIndex(o=>o.id===state.active),j=i+dir;if(j<0||j>=state.outings.length)return;[state.outings[i],state.outings[j]]=[state.outings[j],state.outings[i]];save();render()}
+$("outingSelect").onchange=e=>{state.active=e.target.value;save();render()};$("newBtn").onclick=()=>ask("Nom de la nouvelle sortie","Sortie "+(state.outings.length+1),v=>{if(v.trim()){let o=makeOuting(v.trim());state.outings.push(o);state.active=o.id;save();render()}});
+$("renameBtn").onclick=()=>ask("Renommer la sortie",active().name,v=>{if(v.trim()){active().name=v.trim();save();render()}});$("duplicateBtn").onclick=()=>{let src=active(),copy=JSON.parse(JSON.stringify(src));copy.id=uid();copy.name=src.name+" – copie";copy.cats.forEach(c=>{c.id=uid();c.items.forEach(i=>{i.id=uid();i.done=false})});state.outings.push(copy);state.active=copy.id;save();render()};
+$("upBtn").onclick=()=>moveOuting(-1);$("downBtn").onclick=()=>moveOuting(1);$("resetBtn").onclick=()=>{if(confirm("Tout décocher dans cette sortie ?")){active().cats.forEach(c=>c.items.forEach(i=>i.done=false));save();render()}};
+$("deleteBtn").onclick=()=>{if(state.outings.length===1){alert("Il faut conserver au moins une sortie.");return}if(confirm("Supprimer cette sortie ?")){state.outings=state.outings.filter(o=>o.id!==state.active);state.active=state.outings[0].id;save();render()}};
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;$("installBox").style.display="block"});$("installBtn").onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$("installBox").style.display="none"}};addEventListener("appinstalled",()=>$("installBox").style.display="none");
+if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./sw.js"));render();
+</script></body></html>
