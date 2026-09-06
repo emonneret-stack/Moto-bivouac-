@@ -1,25 +1,18 @@
 {
   "name": "Moto + Bivouac",
-  "short_name": "Moto Bivouac",
-  "description": "Checklist Voyage Moto + Bivouac",
-  "start_url": "./",
+  "short_name": "Moto+Bivouac",
+  "description": "Checklist de préparation pour sorties moto et bivouac, avec listes multiples par sortie.",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0e0f10",
-  "theme_color": "#111111",
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
+  "background_color": "#111110",
+  "theme_color": "#111110",
+  "lang": "fr",
   "icons": [
-    {
-      "src": "icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

@@ -1,53 +1,550 @@
-<!doctype html><html lang="fr"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111111"><meta name="description" content="Checklist Voyage Moto + Bivouac">
-<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icons/icon-192.png"><title>Moto + Bivouac</title>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#111110">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Checklist Moto</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0e0f10;--card:#17191b;--card2:#202326;--text:#f3f3f3;--muted:#a7adb3;--accent:#ffb000;--border:#2c3034;--danger:#ff5b5b}
-*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-body{padding-bottom:30px}.top{position:sticky;top:0;z-index:10;background:rgba(14,15,16,.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:12px}
-h1{font-size:20px;margin:0 0 10px}.row{display:flex;gap:7px;align-items:center}.grow{flex:1}
-select,input,button{font:inherit;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);padding:9px}
-select{width:100%}button{cursor:pointer;background:var(--card2)}button.primary{background:var(--accent);color:#111;border-color:var(--accent);font-weight:700}
-button.danger{background:#542020;color:#fff;border-color:#773030}.small{font-size:13px;padding:7px 9px}.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
-.progress{height:8px;background:#292d30;border-radius:20px;overflow:hidden;margin-top:10px}.bar{height:100%;width:0;background:var(--accent);transition:.2s}
-.stats{font-size:12px;color:var(--muted);margin-top:6px}.wrap{max-width:780px;margin:auto;padding:12px}
-.cat{background:var(--card);border:1px solid var(--border);border-radius:14px;margin:10px 0;overflow:hidden}
-.cathead{display:flex;align-items:center;gap:7px;padding:11px;background:var(--card2)}.cathead strong{flex:1}
-.items{padding:5px 10px 9px}.item{display:flex;align-items:center;gap:8px;padding:8px 2px;border-bottom:1px solid #292d30}.item:last-child{border-bottom:0}
-.item input[type=checkbox]{width:21px;height:21px;accent-color:var(--accent);flex:none}.item span{flex:1;word-break:break-word}.checked{color:var(--muted);text-decoration:line-through}
-.install{display:none;margin:10px 0;padding:10px;border:1px solid #5b481d;background:#2b2412;border-radius:12px;font-size:13px}
-.modal{position:fixed;inset:0;background:#000b;display:none;align-items:flex-end;z-index:30}.modal.show{display:flex}.sheet{width:100%;background:#151719;border-top:1px solid var(--border);border-radius:18px 18px 0 0;padding:18px}.sheet h2{margin:0 0 10px;font-size:18px}.sheet input{width:100%;margin-bottom:10px}
-.footer{text-align:center;color:#737a80;font-size:11px;margin:18px}
-</style></head><body>
-<header class="top"><h1>🏍️ CHECKLIST VOYAGE MOTO + BIVOUAC 🏕️</h1>
-<div class="row"><select id="outingSelect" class="grow"></select><button class="small primary" id="newBtn">＋</button></div>
-<div class="actions"><button class="small" id="renameBtn">Renommer</button><button class="small" id="duplicateBtn">Dupliquer</button>
-<button class="small" id="upBtn">↑ Liste</button><button class="small" id="downBtn">↓ Liste</button><button class="small" id="resetBtn">Tout décocher</button><button class="small danger" id="deleteBtn">🗑</button></div>
-<div class="progress"><div class="bar" id="bar"></div></div><div class="stats" id="stats"></div></header>
-<main class="wrap"><div id="installBox" class="install"><strong>📱 Installer sur l'écran d'accueil</strong><br>Cette application peut être installée comme une PWA.<br><button class="small primary" id="installBtn">Installer</button></div><div id="app"></div></main>
-<div class="footer">Données enregistrées sur ce téléphone • fonctionnement hors ligne</div>
-<div class="modal" id="modal"><div class="sheet"><h2 id="modalTitle"></h2><input id="modalInput" autocomplete="off"><div class="row"><button class="grow" id="cancelModal">Annuler</button><button class="grow primary" id="okModal">Valider</button></div></div></div>
+  :root {
+    --bg: #111110;
+    --surface: #1c1b19;
+    --surface2: #242320;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --accent: #f0a500;
+    --accent-dim: rgba(240,165,0,0.15);
+    --text: #f0ede6;
+    --text2: #9a9690;
+    --text3: #5a5754;
+    --danger: #e05050;
+    --check-bg: #f0a500;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overscroll-behavior: none; }
+  .header { position: sticky; top: 0; z-index: 100; background: var(--bg); padding: env(safe-area-inset-top, 0) 16px 0; border-bottom: 1px solid var(--border); }
+  .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 0 10px; }
+  .app-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--text); }
+  .app-title span { color: var(--accent); }
+  .header-actions { display: flex; align-items: center; gap: 8px; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); flex-shrink: 0; transition: background .2s; }
+  .status-dot.ok { background: #4caf72; }
+  .status-dot.err { background: var(--danger); }
+  .reset-btn { font-size: 12px; color: var(--text3); background: none; border: 1px solid var(--border2); border-radius: 99px; padding: 5px 11px; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
+
+  .list-bar { display: flex; align-items: center; gap: 6px; padding: 0 0 10px; }
+  .list-select { flex: 1; min-width: 0; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; outline: none; }
+  .icon-btn { width: 34px; height: 34px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .icon-btn.danger { color: var(--danger); }
+
+  .ptrack { height: 3px; background: var(--surface2); border-radius: 99px; overflow: hidden; margin-bottom: 8px; }
+  .pfill { height: 100%; background: var(--accent); border-radius: 99px; transition: width .3s ease; width: 0%; }
+  .plabel { font-size: 11px; color: var(--text3); padding-bottom: 10px; letter-spacing: 0.04em; display: flex; justify-content: space-between; }
+  .content { padding: 12px 12px calc(env(safe-area-inset-bottom, 0px) + 24px); }
+  .loading { text-align: center; padding: 60px 20px; color: var(--text3); font-size: 13px; }
+  .err-banner { background: rgba(224,80,80,0.12); border: 1px solid rgba(224,80,80,0.3); color: var(--danger); font-size: 12px; padding: 10px 14px; border-radius: var(--radius-sm); margin-bottom: 10px; }
+  .section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+  .sec-head { display: flex; align-items: center; gap: 6px; padding: 10px 10px 10px 14px; cursor: pointer; background: var(--surface2); user-select: none; }
+  .sec-icon { font-size: 16px; flex-shrink: 0; width: 22px; text-align: center; }
+  .sec-title-inp { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 500; color: var(--text); flex: 1; min-width: 0; border: none; background: none; outline: none; cursor: text; }
+  .sec-badge { font-size: 11px; color: var(--text3); background: var(--bg); border: 1px solid var(--border); border-radius: 99px; padding: 2px 8px; flex-shrink: 0; white-space: nowrap; }
+  .sec-badge.all { background: var(--accent-dim); color: var(--accent); border-color: rgba(240,165,0,0.3); }
+  .move-btns { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+  .move-btn { width: 20px; height: 16px; border: none; background: var(--bg); border: 1px solid var(--border); color: var(--text2); font-size: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 4px; line-height: 1; padding: 0; }
+  .move-btn:disabled { opacity: 0.25; cursor: default; }
+  .chev { font-size: 11px; color: var(--text3); flex-shrink: 0; transition: transform .2s; }
+  .chev.open { transform: rotate(180deg); }
+  .item-list { list-style: none; }
+  .item-list.collapsed { display: none; }
+  .item { display: flex; align-items: center; gap: 11px; padding: 0 14px; min-height: 50px; border-top: 1px solid var(--border); }
+  .cb { width: 22px; height: 22px; min-width: 22px; border: 1.5px solid var(--border2); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background .15s, border-color .15s; background: transparent; }
+  .cb.on { background: var(--check-bg); border-color: var(--check-bg); }
+  .cb svg { display: none; }
+  .cb.on svg { display: block; }
+  .item-inp { flex: 1; font-size: 14px; color: var(--text); font-weight: 300; line-height: 1.35; border: none; background: none; outline: none; font-family: 'DM Sans', sans-serif; padding: 14px 0; width: 100%; min-width: 0; }
+  .item.done .item-inp { color: var(--text3); text-decoration: line-through; text-decoration-color: var(--text3); }
+  .del { width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(224,80,80,0.10); color: var(--danger); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1; }
+  .add-row { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-top: 1px solid var(--border); background: var(--bg); }
+  .add-inp { flex: 1; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 10px; outline: none; min-width: 0; }
+  .add-inp::placeholder { color: var(--text3); }
+  .add-inp:focus { border-color: var(--border2); }
+  .add-btn { font-size: 22px; width: 38px; height: 38px; border-radius: 50%; border: none; background: var(--accent); color: var(--bg); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 500; line-height: 1; }
+  .sec-del-btn { width: 26px; height: 26px; border-radius: 50%; border: none; background: rgba(224,80,80,0.10); color: var(--danger); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1; }
+  .new-sec-area { background: var(--surface); border: 1px dashed var(--border2); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; }
+  .new-sec-area label { display: block; font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+  .emoji-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .e-btn { font-size: 18px; width: 38px; height: 38px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface2); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+  .e-btn.sel { border-color: var(--accent); background: var(--accent-dim); }
+  .new-sec-row { display: flex; gap: 8px; }
+  .new-sec-inp { flex: 1; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 10px; outline: none; min-width: 0; }
+  .new-sec-inp::placeholder { color: var(--text3); }
+  .new-sec-inp:focus { border-color: var(--border2); }
+  .new-sec-btn { font-size: 13px; font-family: 'Syne', sans-serif; font-weight: 500; color: var(--bg); background: var(--accent); border: none; border-radius: var(--radius-sm); padding: 9px 16px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-inner">
+    <div class="app-title">Moto <span>+</span> Bivouac</div>
+    <div class="header-actions">
+      <div class="status-dot" id="status-dot" title="Statut de la sauvegarde"></div>
+      <button class="reset-btn" id="reset-btn">Tout décocher</button>
+    </div>
+  </div>
+  <div class="list-bar">
+    <select class="list-select" id="list-select"></select>
+    <button class="icon-btn" id="dup-btn" title="Dupliquer cette liste">⧉</button>
+    <button class="icon-btn" id="rename-btn" title="Renommer">✎</button>
+    <button class="icon-btn" id="new-btn" title="Nouvelle liste">＋</button>
+    <button class="icon-btn danger" id="del-list-btn" title="Supprimer cette liste">🗑</button>
+  </div>
+  <div class="ptrack"><div class="pfill" id="pbar"></div></div>
+  <div class="plabel"><span id="plabel">0 / 0 cochés</span></div>
+</div>
+<div class="content" id="root"><div class="loading">Chargement…</div></div>
+
 <script>
-const KEY="moto-multisorties-pwa-v2", DEFAULT_SECTIONS=[["⚖️ AVANT DE PARTIR", ["Révision moto (pneus, freins, niveaux, pression)", "Test du matériel, éclairage, batterie ...", "Itinéraire approximatif", "Plein d'essence", "Vérif météo"]], ["📄 PAPIERS & ESSENTIELS", ["Permis de conduire", "Carte grise", "Assurance (carte verte)", "Carte bancaire + un peu de cash", "Carte d'identité / passeport"]], ["🧭 NAVIGATION", ["Téléphone + GPS offline", "Batterie externe", "Carte papier", "Carte hors ligne", "Trace GPX"]], ["🧳 ÉQUIPEMENT MOTO", ["Câble chargeur USB moto", "Support téléphone / GPS", "Antivol de vélo (pour casque)", "Antivol / bloc disque", "Valises et sacs de transport", "Filets élastiques", "Sangles / tendeurs"]], ["🔧 OUTILLAGE & ENTRETIEN MOTO", ["Outils de base", "Booster / batterie externe", "Couteau / multi-outil", "Kit réparation crevaison", "Mini compresseur", "Bombe anti-crevaison", "Lubrifiant chaîne", "Chiffon", "Jerricane d'essence ?"]], ["🏕️ BIVOUAC", ["Tente", "Sac de couchage", "Matelas", "Oreiller", "Patch de réparation matelas", "Lampe frontale", "Bâche / protection sol", "Couverture de survie", "Tapis de pique-nique / bâche", "Chaise pliante très compacte", "Adaptateur camping", "Petite rallonge"]], ["🔥 CUISINE & EAU", ["Réchaud + gaz", "Popote / couverts", "Briquet + allumettes", "Gourde isotherme / poche à eau", "Gourde filtrante", "Gobelet / couverts", "Liquide vaisselle", "Éponge"]], ["🍽️ NOURRITURE", ["Repas simples (pâtes, riz...)", "Repas déshydratés", "Thé / chocolat", "Petit déjeuner", "Barres céréales, fruits secs", "Épices (sel, poivre, etc.)", "Conserves (sardines, maquereau ...)"]], ["🩹 SÉCURITÉ", ["Numéro d'urgence pays", "Trousse de secours", "Pansements (classiques + ampoules)", "Compresses stériles", "Désinfectant", "Bande / strap", "Antalgiques (paracétamol, ibuprofène)", "Traitement allergique ou autre", "Aspi-venin", "Pince à tiques", "Ciseaux", "Gants jetables"]], ["🦺 ÉQUIPEMENT MOTARD", ["Casque", "Gants", "Veste / pantalon moto", "Combinaison de pluie", "Gilet jaune", "Bottes / chaussures", "Bouchons d'oreilles"]], ["👕 VÊTEMENTS", ["Sous-vêtements", "Chaussettes", "T-shirt / pantalon", "Polaire / doudoune", "Vêtements légers", "Chaussures légères", "Bonnet / gants", "Lunettes de soleil", "Lunettes de vue", "Casquette", "Serviette microfibre"]], ["🧴 HYGIÈNE", ["Papier toilette", "Gel douche", "Lingettes", "Crème solaire", "Anti-moustiques", "Brosse à dents + hygiène"]], ["🌧️ PROTECTION & SACS", ["Sacs étanches pour vêtements", "Housse pluie"]], ["📦 DIVERS", ["Douche solaire", "Sac poubelle", "Lingettes pour visière", "Chargeur secteur"]]];
-const uid=()=>crypto.randomUUID(), $=id=>document.getElementById(id);
-function makeOuting(name){return{id:uid(),name,cats:DEFAULT_SECTIONS.map(([n,its])=>({id:uid(),name:n,items:its.map(t=>({id:uid(),text:t,done:false}))}))}}
-function load(){try{let s=JSON.parse(localStorage.getItem(KEY));if(s&&s.outings?.length)return s}catch(e){}let o=makeOuting("Sortie 1");return{outings:[o],active:o.id}}
-let state=load(), deferredPrompt=null; const active=()=>state.outings.find(o=>o.id===state.active)||state.outings[0]; const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
-function renderSelect(){let s=$("outingSelect");s.innerHTML="";state.outings.forEach((o,i)=>{let op=document.createElement("option");op.value=o.id;op.textContent=(i+1)+". "+o.name;s.append(op)});s.value=active().id}
-function progress(){let a=active(),its=a.cats.flatMap(c=>c.items),d=its.filter(i=>i.done).length,t=its.length,p=t?Math.round(d/t*100):0;$("bar").style.width=p+"%";$("stats").textContent=`${d} / ${t} éléments cochés • ${p}%`}
-function ask(title,value,cb){$("modalTitle").textContent=title;$("modalInput").value=value||"";$("modal").classList.add("show");$("modalInput").focus();const ok=()=>{$("modal").classList.remove("show");cb($("modalInput").value)};$("okModal").onclick=ok;$("cancelModal").onclick=()=>$("modal").classList.remove("show");$("modalInput").onkeydown=e=>{if(e.key==="Enter")ok();if(e.key==="Escape")$("modal").classList.remove("show")}}
-function render(){renderSelect();progress();let o=active(),root=$("app");root.innerHTML="";
-o.cats.forEach((c,ci)=>{let box=document.createElement("section");box.className="cat";let h=document.createElement("div");h.className="cathead";let title=document.createElement("strong");title.textContent=c.name;let col=document.createElement("button");col.className="small";col.textContent="▾";let ed=document.createElement("button");ed.className="small";ed.textContent="✎";let de=document.createElement("button");de.className="small danger";de.textContent="🗑";h.append(title,col,ed,de);box.append(h);
-let items=document.createElement("div");items.className="items";c.items.forEach((it,ii)=>{let row=document.createElement("div");row.className="item";let cb=document.createElement("input");cb.type="checkbox";cb.checked=it.done;let sp=document.createElement("span");sp.textContent=it.text;if(it.done)sp.className="checked";let e=document.createElement("button");e.className="small";e.textContent="✎";let d=document.createElement("button");d.className="small danger";d.textContent="×";cb.onchange=()=>{it.done=cb.checked;save();render()};e.onclick=()=>ask("Modifier l'élément",it.text,v=>{if(v.trim()){it.text=v.trim();save();render()}});d.onclick=()=>{c.items.splice(ii,1);save();render()};row.append(cb,sp,e,d);items.append(row)});
-let add=document.createElement("button");add.className="small";add.textContent="＋ Ajouter un élément";add.onclick=()=>ask("Nouvel élément","",v=>{if(v.trim()){c.items.push({id:uid(),text:v.trim(),done:false});save();render()}});items.append(add);
-col.onclick=()=>{items.style.display=items.style.display==="none"?"":"none";col.textContent=items.style.display==="none"?"▸":"▾"};ed.onclick=()=>ask("Modifier la catégorie",c.name,v=>{if(v.trim()){c.name=v.trim();save();render()}});de.onclick=()=>{if(confirm("Supprimer cette catégorie et ses éléments ?")){o.cats.splice(ci,1);save();render()}};box.append(items);root.append(box)});
-let ac=document.createElement("button");ac.className="primary";ac.style.width="100%";ac.textContent="＋ Ajouter une catégorie";ac.onclick=()=>ask("Nouvelle catégorie","",v=>{if(v.trim()){o.cats.push({id:uid(),name:v.trim(),items:[]});save();render()}});root.append(ac)}
-function moveOuting(dir){let i=state.outings.findIndex(o=>o.id===state.active),j=i+dir;if(j<0||j>=state.outings.length)return;[state.outings[i],state.outings[j]]=[state.outings[j],state.outings[i]];save();render()}
-$("outingSelect").onchange=e=>{state.active=e.target.value;save();render()};$("newBtn").onclick=()=>ask("Nom de la nouvelle sortie","Sortie "+(state.outings.length+1),v=>{if(v.trim()){let o=makeOuting(v.trim());state.outings.push(o);state.active=o.id;save();render()}});
-$("renameBtn").onclick=()=>ask("Renommer la sortie",active().name,v=>{if(v.trim()){active().name=v.trim();save();render()}});$("duplicateBtn").onclick=()=>{let src=active(),copy=JSON.parse(JSON.stringify(src));copy.id=uid();copy.name=src.name+" – copie";copy.cats.forEach(c=>{c.id=uid();c.items.forEach(i=>{i.id=uid();i.done=false})});state.outings.push(copy);state.active=copy.id;save();render()};
-$("upBtn").onclick=()=>moveOuting(-1);$("downBtn").onclick=()=>moveOuting(1);$("resetBtn").onclick=()=>{if(confirm("Tout décocher dans cette sortie ?")){active().cats.forEach(c=>c.items.forEach(i=>i.done=false));save();render()}};
-$("deleteBtn").onclick=()=>{if(state.outings.length===1){alert("Il faut conserver au moins une sortie.");return}if(confirm("Supprimer cette sortie ?")){state.outings=state.outings.filter(o=>o.id!==state.active);state.active=state.outings[0].id;save();render()}};
-addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;$("installBox").style.display="block"});$("installBtn").onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$("installBox").style.display="none"}};addEventListener("appinstalled",()=>$("installBox").style.display="none");
-if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./sw.js"));render();
-</script></body></html>
+var ICONS=['📄','🏍️','🏕️','🔥','⚖️','🧭','👕','🌧️','🍽️','🧴','📋','🔧','💊','📦','🗺️','🩹','🦺','🧳'];
+var selIcon='📋';
+
+var INDEX_KEY='moto-checklists-index-v2';
+var CURRENT_KEY='moto-checklist-current-v2';
+function listKey(id){ return 'moto-checklist-v2:'+id; }
+
+var saveTimer=null;
+var lastSavedJSON=null;
+
+var index=[];       // [{id, title}]
+var currentId=null;
+var currentTitle='';
+var state=null;      // array of sections for the current list
+
+// ---------- Modèle par défaut : 14 catégories / 100 éléments (source : fichier Word) ----------
+var DEFAULT=[
+  {icon:"⚖️",title:"Avant de partir",items:["Révision moto (pneus, freins, niveaux, pression)","Test du matériel, éclairage, batterie ...","Itinéraire approximatif","Plein d'essence","Vérif météo"]},
+  {icon:"📄",title:"Papiers & essentiels",items:["Permis de conduire","Carte grise","Assurance (carte verte)","Carte bancaire + un peu de cash","Carte d'identité / passeport"]},
+  {icon:"🧭",title:"Navigation",items:["Téléphone + GPS offline","Batterie externe","Carte papier","Carte hors ligne","Trace GPX"]},
+  {icon:"🧳",title:"Équipement Moto",items:["Câble chargeur USB moto","Support téléphone / GPS","Antivol de vélo (pour casque)","Antivol / bloc disque","Valises et sacs de transport","Filets élastiques","Sangles / tendeurs"]},
+  {icon:"🔧",title:"Outillage & entretien moto",items:["Outils de base","Booster / batterie externe","Couteau / multi-outil","Kit réparation crevaison","Mini compresseur","Bombe anti-crevaison","Lubrifiant chaîne","Chiffon","Jerricane d'essence ?"]},
+  {icon:"🏕️",title:"Bivouac",items:["Tente","Sac de couchage","Matelas","Oreiller","Patch de réparation matelas","Lampe frontale","Bâche / protection sol","Couverture de survie","Tapis de pique-nique / bâche","Chaise pliante très compacte","Adaptateur camping","Petite rallonge"]},
+  {icon:"🔥",title:"Cuisine & eau",items:["Réchaud + gaz","Popote / couverts","Briquet + allumettes","Gourde isotherme / poche à eau","Gourde filtrante","Gobelet / couverts","Liquide vaisselle","Éponge"]},
+  {icon:"🍽️",title:"Nourriture",items:["Repas simples (pâtes, riz...)","Repas déshydratés","Thé / chocolat","Petit déjeuner","Barres céréales, fruits secs","Épices (sel, poivre, etc.)","Conserves (sardines, maquereau ...)"]},
+  {icon:"🩹",title:"Sécurité",items:["Numéro d'urgence pays","Trousse de secours","Pansements (classiques + ampoules)","Compresses stériles","Désinfectant","Bande / strap","Antalgiques (paracétamol, ibuprofène)","Traitement allergique ou autre","Aspi-venin","Pince à tiques","Ciseaux","Gants jetables"]},
+  {icon:"🦺",title:"Équipement motard",items:["Casque","Gants","Veste / pantalon moto","Combinaison de pluie","Gilet jaune","Bottes / chaussures","Bouchons d'oreilles"]},
+  {icon:"👕",title:"Vêtements",items:["Sous-vêtements","Chaussettes","T-shirt / pantalon","Polaire / doudoune","Vêtements légers","Chaussures légères","Bonnet / gants","Lunettes de soleil","Lunettes de vue","Casquette","Serviette microfibre"]},
+  {icon:"🧴",title:"Hygiène",items:["Papier toilette","Gel douche","Lingettes","Crème solaire","Anti-moustiques","Brosse à dents + hygiène"]},
+  {icon:"🌧️",title:"Protection & sacs",items:["Sacs étanches pour vêtements","Housse pluie"]},
+  {icon:"📦",title:"Divers",items:["Douche solaire","Sac poubelle","Lingettes pour visière","Chargeur secteur"]}
+];
+
+function defaultSections(){
+  return DEFAULT.map(function(sec){return{icon:sec.icon,title:sec.title,open:true,items:sec.items.map(function(t){return{text:t,checked:false};})};});
+}
+
+function genId(){
+  return 'l'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+}
+
+function setStatus(kind){
+  var dot=document.getElementById('status-dot');
+  if(!dot)return;
+  dot.className='status-dot'+(kind==='ok'?' ok':kind==='err'?' err':'');
+}
+
+function showErrorBanner(msg){
+  var root=document.getElementById('root');
+  var existing=document.getElementById('err-banner');
+  if(existing)existing.remove();
+  var b=document.createElement('div');
+  b.id='err-banner';
+  b.className='err-banner';
+  b.textContent=msg;
+  root.insertBefore(b,root.firstChild);
+}
+
+// ---------- Stockage ----------
+// Utilise window.storage quand disponible (environnement artefact Claude.ai).
+// Sinon (fichier ouvert directement dans un navigateur / PWA sur le téléphone),
+// bascule automatiquement sur localStorage.
+var USE_LOCAL=!(typeof window.storage!=='undefined'&&window.storage&&typeof window.storage.get==='function');
+
+async function storageGetJSON(key){
+  if(USE_LOCAL){
+    try{var raw=localStorage.getItem(key);return raw?JSON.parse(raw):null;}catch(e){return null;}
+  }
+  try{
+    var res=await window.storage.get(key,false);
+    if(res&&res.value)return JSON.parse(res.value);
+  }catch(e){}
+  return null;
+}
+
+async function storageSetJSON(key,value){
+  if(USE_LOCAL){
+    try{localStorage.setItem(key,JSON.stringify(value));return true;}
+    catch(e){console.error('Erreur de sauvegarde (localStorage)',e);return false;}
+  }
+  try{
+    var result=await window.storage.set(key,JSON.stringify(value),false);
+    return !!result;
+  }catch(e){console.error('Erreur de sauvegarde',e);return false;}
+}
+
+async function storageDeleteKey(key){
+  if(USE_LOCAL){try{localStorage.removeItem(key);}catch(e){}return;}
+  try{await window.storage.delete(key,false);}catch(e){}
+}
+
+async function loadIndex(){ var idx=await storageGetJSON(INDEX_KEY); return idx||[]; }
+async function saveIndex(){ await storageSetJSON(INDEX_KEY,index); }
+async function loadListData(id){ return await storageGetJSON(listKey(id)); }
+
+async function saveCurrentNow(){
+  if(!currentId||!state)return;
+  var json=JSON.stringify({title:currentTitle,sections:state});
+  if(json===lastSavedJSON)return;
+  var ok=await storageSetJSON(listKey(currentId),{title:currentTitle,sections:state});
+  if(ok){lastSavedJSON=json;setStatus('ok');}else{setStatus('err');}
+}
+
+function scheduleSave(){
+  setStatus('');
+  if(saveTimer)clearTimeout(saveTimer);
+  saveTimer=setTimeout(saveCurrentNow,400);
+}
+
+async function saveCurrentPointer(){ await storageSetJSON(CURRENT_KEY,currentId); }
+
+// ---------- Gestion des listes (sorties) ----------
+
+function renderListSelect(){
+  var sel=document.getElementById('list-select');
+  sel.innerHTML='';
+  index.forEach(function(entry){
+    var opt=document.createElement('option');
+    opt.value=entry.id;
+    opt.textContent=entry.title;
+    if(entry.id===currentId)opt.selected=true;
+    sel.appendChild(opt);
+  });
+}
+
+async function switchTo(id){
+  if(saveTimer){clearTimeout(saveTimer);saveTimer=null;await saveCurrentNow();}
+  var data=await loadListData(id);
+  if(!data){
+    showErrorBanner('Liste introuvable, ouverture de la première liste disponible.');
+    if(index.length){id=index[0].id;data=await loadListData(id);}
+  }
+  currentId=id;
+  currentTitle=(data&&data.title)||'Sans titre';
+  state=(data&&data.sections)||defaultSections();
+  lastSavedJSON=JSON.stringify({title:currentTitle,sections:state});
+  await saveCurrentPointer();
+  renderListSelect();
+  render();
+}
+
+async function duplicateCurrent(){
+  var name=prompt('Nom de la copie :',currentTitle+' (copie)');
+  if(name===null)return;
+  name=name.trim();if(!name)return;
+  var newId=genId();
+  var clonedSections=JSON.parse(JSON.stringify(state));
+  index.push({id:newId,title:name});
+  await saveIndex();
+  await storageSetJSON(listKey(newId),{title:name,sections:clonedSections});
+  await switchTo(newId);
+}
+
+async function createBlankList(){
+  var name=prompt('Nom de la nouvelle sortie :','Nouvelle sortie');
+  if(name===null)return;
+  name=name.trim();if(!name)return;
+  var useTemplate=confirm('Partir du modèle standard (14 catégories pré-remplies) ?\nAnnuler = liste totalement vide.');
+  var newId=genId();
+  var sections=useTemplate?defaultSections():[];
+  index.push({id:newId,title:name});
+  await saveIndex();
+  await storageSetJSON(listKey(newId),{title:name,sections:sections});
+  await switchTo(newId);
+}
+
+async function renameCurrent(){
+  var name=prompt('Renommer la liste :',currentTitle);
+  if(name===null)return;
+  name=name.trim();if(!name)return;
+  currentTitle=name;
+  var entry=index.find(function(e){return e.id===currentId;});
+  if(entry)entry.title=name;
+  await saveIndex();
+  await saveCurrentNow();
+  renderListSelect();
+}
+
+async function deleteCurrentList(){
+  if(index.length<=1){alert('Impossible de supprimer la dernière liste restante.');return;}
+  if(!confirm('Supprimer définitivement la liste "'+currentTitle+'" ?'))return;
+  var idToDelete=currentId;
+  index=index.filter(function(e){return e.id!==idToDelete;});
+  await saveIndex();
+  await storageDeleteKey(listKey(idToDelete));
+  await switchTo(index[0].id);
+}
+
+// ---------- Réordonnancement des catégories ----------
+
+function moveCategory(si,dir){
+  var target=si+dir;
+  if(target<0||target>=state.length)return;
+  var tmp=state[si];
+  state[si]=state[target];
+  state[target]=tmp;
+  scheduleSave();
+  render();
+}
+
+// ---------- Rendu de la checklist ----------
+
+function updateProgress(){
+  var all=0,done=0;
+  state.forEach(function(s){all+=s.items.length;done+=s.items.filter(function(i){return i.checked;}).length;});
+  document.getElementById('pbar').style.width=(all?Math.round(done/all*100):0)+'%';
+  document.getElementById('plabel').textContent=done+' / '+all+' cochés';
+}
+
+function render(){
+  var root=document.getElementById('root');
+  root.innerHTML='';
+
+  state.forEach(function(sec,si){
+    var div=document.createElement('div');
+    div.className='section';
+
+    var done=sec.items.filter(function(i){return i.checked;}).length;
+    var total=sec.items.length;
+
+    var head=document.createElement('div');
+    head.className='sec-head';
+
+    // Flèches de réordonnancement
+    var moveWrap=document.createElement('div');
+    moveWrap.className='move-btns';
+    var upBtn=document.createElement('button');
+    upBtn.className='move-btn';
+    upBtn.textContent='▲';
+    upBtn.title='Monter';
+    upBtn.disabled=(si===0);
+    upBtn.addEventListener('click',function(e){e.stopPropagation();moveCategory(si,-1);});
+    var downBtn=document.createElement('button');
+    downBtn.className='move-btn';
+    downBtn.textContent='▼';
+    downBtn.title='Descendre';
+    downBtn.disabled=(si===state.length-1);
+    downBtn.addEventListener('click',function(e){e.stopPropagation();moveCategory(si,1);});
+    moveWrap.appendChild(upBtn);
+    moveWrap.appendChild(downBtn);
+
+    var iconEl=document.createElement('span');
+    iconEl.className='sec-icon';
+    iconEl.textContent=sec.icon;
+
+    var titleInp=document.createElement('input');
+    titleInp.type='text';
+    titleInp.className='sec-title-inp';
+    titleInp.value=sec.title;
+    titleInp.addEventListener('change',function(e){state[si].title=e.target.value;scheduleSave();});
+    titleInp.addEventListener('click',function(e){e.stopPropagation();});
+
+    var badge=document.createElement('span');
+    badge.className='sec-badge'+(done===total&&total>0?' all':'');
+    badge.textContent=done+' / '+total;
+
+    var delSecBtn=document.createElement('button');
+    delSecBtn.className='sec-del-btn';
+    delSecBtn.textContent='×';
+    delSecBtn.title='Supprimer';
+    delSecBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(confirm('Supprimer "'+sec.title+'" ?')){state.splice(si,1);scheduleSave();render();updateProgress();}
+    });
+
+    var chev=document.createElement('span');
+    chev.className='chev'+(sec.open?' open':'');
+    chev.textContent='▾';
+
+    head.appendChild(moveWrap);
+    head.appendChild(iconEl);
+    head.appendChild(titleInp);
+    head.appendChild(badge);
+    head.appendChild(delSecBtn);
+    head.appendChild(chev);
+
+    head.addEventListener('click',function(e){
+      if(e.target===titleInp||e.target===delSecBtn||e.target===upBtn||e.target===downBtn)return;
+      state[si].open=!state[si].open;scheduleSave();
+      ul.classList.toggle('collapsed',!state[si].open);
+      chev.classList.toggle('open',state[si].open);
+    });
+
+    var ul=document.createElement('ul');
+    ul.className='item-list'+(sec.open?'':' collapsed');
+
+    sec.items.forEach(function(item,ii){
+      var li=document.createElement('li');
+      li.className='item'+(item.checked?' done':'');
+
+      var cb=document.createElement('div');
+      cb.className='cb'+(item.checked?' on':'');
+      cb.innerHTML='<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5,9.5 11,3.5" stroke="#111110" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      cb.addEventListener('click',function(){
+        state[si].items[ii].checked=!state[si].items[ii].checked;
+        scheduleSave();
+        li.classList.toggle('done',state[si].items[ii].checked);
+        cb.classList.toggle('on',state[si].items[ii].checked);
+        var d2=state[si].items.filter(function(i){return i.checked;}).length;
+        var t2=state[si].items.length;
+        badge.textContent=d2+' / '+t2;
+        badge.className='sec-badge'+(d2===t2&&t2>0?' all':'');
+        updateProgress();
+      });
+
+      var inp=document.createElement('input');
+      inp.type='text';
+      inp.className='item-inp';
+      inp.value=item.text;
+      inp.addEventListener('change',function(e){state[si].items[ii].text=e.target.value;scheduleSave();});
+
+      var del=document.createElement('button');
+      del.className='del';
+      del.textContent='×';
+      del.addEventListener('click',function(){state[si].items.splice(ii,1);scheduleSave();render();updateProgress();});
+
+      li.appendChild(cb);li.appendChild(inp);li.appendChild(del);
+      ul.appendChild(li);
+    });
+
+    var addRow=document.createElement('div');
+    addRow.className='add-row';
+    var addInp=document.createElement('input');
+    addInp.type='text';addInp.className='add-inp';addInp.placeholder='Ajouter un élément…';
+    addInp.setAttribute('enterkeyhint','done');
+    var addBtn=document.createElement('button');
+    addBtn.className='add-btn';addBtn.textContent='+';
+
+    function doAdd(){
+      var v=addInp.value.trim();if(!v)return;
+      state[si].items.push({text:v,checked:false});scheduleSave();addInp.value='';render();updateProgress();
+    }
+    addBtn.addEventListener('click',doAdd);
+    addInp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();doAdd();}});
+
+    addRow.appendChild(addInp);addRow.appendChild(addBtn);
+    div.appendChild(head);div.appendChild(ul);div.appendChild(addRow);
+    root.appendChild(div);
+  });
+
+  var area=document.createElement('div');
+  area.className='new-sec-area';
+  var lbl=document.createElement('label');
+  lbl.textContent='Nouvelle catégorie';
+  area.appendChild(lbl);
+
+  var eRow=document.createElement('div');
+  eRow.className='emoji-row';
+  ICONS.forEach(function(ic){
+    var btn=document.createElement('div');
+    btn.className='e-btn'+(selIcon===ic?' sel':'');
+    btn.textContent=ic;
+    btn.addEventListener('click',function(){
+      selIcon=ic;
+      eRow.querySelectorAll('.e-btn').forEach(function(b){b.classList.toggle('sel',b.textContent===ic);});
+    });
+    eRow.appendChild(btn);
+  });
+  area.appendChild(eRow);
+
+  var secRow=document.createElement('div');
+  secRow.className='new-sec-row';
+  var secInp=document.createElement('input');
+  secInp.type='text';secInp.className='new-sec-inp';secInp.placeholder='Nom de la catégorie…';
+  secInp.setAttribute('enterkeyhint','done');
+  var secBtn=document.createElement('button');
+  secBtn.className='new-sec-btn';secBtn.textContent='Ajouter';
+
+  function doSec(){
+    var v=secInp.value.trim();if(!v)return;
+    state.push({icon:selIcon,title:v,open:true,items:[]});scheduleSave();secInp.value='';render();updateProgress();
+  }
+  secBtn.addEventListener('click',doSec);
+  secInp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();doSec();}});
+
+  secRow.appendChild(secInp);secRow.appendChild(secBtn);
+  area.appendChild(secRow);
+  root.appendChild(area);
+
+  updateProgress();
+}
+
+document.getElementById('reset-btn').addEventListener('click',function(){
+  if(confirm('Décocher tous les éléments de "'+currentTitle+'" ?')){
+    state.forEach(function(s){s.items.forEach(function(i){i.checked=false;});});
+    scheduleSave();render();
+  }
+});
+document.getElementById('list-select').addEventListener('change',function(e){switchTo(e.target.value);});
+document.getElementById('dup-btn').addEventListener('click',duplicateCurrent);
+document.getElementById('new-btn').addEventListener('click',createBlankList);
+document.getElementById('rename-btn').addEventListener('click',renameCurrent);
+document.getElementById('del-list-btn').addEventListener('click',deleteCurrentList);
+
+(async function init(){
+  try{
+    index=await loadIndex();
+    if(!index.length){
+      var id=genId();
+      var sections=defaultSections();
+      index=[{id:id,title:'Ma liste'}];
+      await saveIndex();
+      await storageSetJSON(listKey(id),{title:'Ma liste',sections:sections});
+      currentId=id;
+    }else{
+      currentId=await storageGetJSON(CURRENT_KEY);
+      if(!currentId||!index.find(function(e){return e.id===currentId;})){
+        currentId=index[0].id;
+      }
+    }
+    var data=await loadListData(currentId);
+    currentTitle=(data&&data.title)||'Sans titre';
+    state=(data&&data.sections)||defaultSections();
+    lastSavedJSON=JSON.stringify({title:currentTitle,sections:state});
+  }catch(e){
+    console.error(e);
+    currentId=currentId||genId();
+    currentTitle='Ma liste';
+    state=defaultSections();
+    index=index.length?index:[{id:currentId,title:currentTitle}];
+    showErrorBanner('Impossible de charger la sauvegarde, valeurs par défaut utilisées.');
+  }
+  renderListSelect();
+  render();
+})();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(e) {
+      console.error('Échec d\'enregistrement du service worker', e);
+    });
+  });
+}
+</script>
+</body>
+</html>
