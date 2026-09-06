@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<meta name="description" content="Checklist Moto + Bivouac — plusieurs sorties, sauvegarde locale et fonctionnement hors ligne">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<title>Moto + Bivouac</title>
+<style>
+:root{--bg:#0e0f10;--card:#17191b;--card2:#202326;--text:#f3f3f3;--muted:#a7adb3;--accent:#ffb000;--danger:#ff5b5b;--border:#2c3034}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+body{padding-bottom:30px}.top{position:sticky;top:0;z-index:10;background:rgba(14,15,16,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:12px 12px 10px}
+h1{font-size:21px;margin:0 0 10px}.row{display:flex;gap:8px;align-items:center}.grow{flex:1}
+select,input,button{font:inherit;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);padding:10px}
+select{width:100%}button{cursor:pointer;background:var(--card2)}button.primary{background:var(--accent);color:#111;border-color:var(--accent);font-weight:700}
+button.danger{color:#fff;background:#5a2020;border-color:#7d3030}.small{font-size:13px;padding:7px 9px}
+.progress{height:8px;background:#292d30;border-radius:20px;overflow:hidden;margin-top:10px}.bar{height:100%;width:0;background:var(--accent);transition:.2s}
+.stats{font-size:12px;color:var(--muted);margin-top:6px}.wrap{max-width:760px;margin:auto;padding:12px}
+.cat{background:var(--card);border:1px solid var(--border);border-radius:14px;margin:10px 0;overflow:hidden}
+.cathead{display:flex;align-items:center;gap:8px;padding:11px 12px;background:var(--card2)}.cathead strong{flex:1}
+.items{padding:5px 10px 9px}.item{display:flex;align-items:center;gap:9px;padding:9px 2px;border-bottom:1px solid #292d30}.item:last-child{border-bottom:0}
+.item input[type=checkbox]{width:21px;height:21px;accent-color:var(--accent);flex:none}.item span{flex:1;min-width:0;word-break:break-word}.checked{color:var(--muted);text-decoration:line-through}
+.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.empty{text-align:center;color:var(--muted);padding:30px 10px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:flex-end;z-index:20}.modal.show{display:flex}.sheet{background:#151719;border-top:1px solid var(--border);width:100%;padding:18px;border-radius:18px 18px 0 0}.sheet h2{margin-top:0;font-size:18px}.sheet input{width:100%;margin:7px 0 12px}
+.install{display:none;margin:10px 0;padding:10px;border:1px solid #5b481d;background:#2b2412;border-radius:12px;font-size:13px}
+.install button{margin-top:7px}.footer{text-align:center;color:#737a80;font-size:11px;margin:18px}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>🏍️ Moto + Bivouac</h1>
+  <div class="row">
+    <select id="outingSelect" class="grow"></select>
+    <button class="small primary" id="newBtn">＋</button>
+  </div>
+  <div class="row actions">
+    <button class="small" id="renameBtn">Renommer</button>
+    <button class="small" id="duplicateBtn">Dupliquer</button>
+    <button class="small" id="resetBtn">Tout décocher</button>
+    <button class="small danger" id="deleteBtn">🗑</button>
+  </div>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <div class="stats" id="stats"></div>
+</header>
+
+<main class="wrap">
+  <div id="installBox" class="install">
+    <strong>📱 Installer sur l'écran d'accueil</strong><br>
+    Cette application peut être installée comme une PWA.
+    <div><button class="small primary" id="installBtn">Installer</button></div>
+  </div>
+  <div id="app"></div>
+</main>
+<div class="footer">Données enregistrées sur ce téléphone • fonctionnement hors ligne</div>
+
+<div class="modal" id="modal">
+  <div class="sheet">
+    <h2 id="modalTitle"></h2>
+    <input id="modalInput" autocomplete="off">
+    <div class="row">
+      <button class="grow" id="cancelModal">Annuler</button>
+      <button class="grow primary" id="okModal">Valider</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const KEY="moto-multisorties-pwa-v1";
+const DEFAULT=[
+["📄 Papiers & essentiels",["Permis de conduire","Carte grise","Assurance moto","Pièce d'identité","Carte bancaire / espèces","Téléphone + câble","Batterie externe","Clés de la moto"]],
+["🏍️ Moto & équipement",["Casque","Gants","Veste moto","Pantalon moto","Bottes / chaussures moto","Protection dorsale","Antivol","Kit réparation crevaison","Pompe / compresseur","Kit outils","Lubrifiant chaîne","Sangles / tendeurs","Pansement / chiffon","Bouteille d'eau pour la moto"]],
+["🏕️ Bivouac",["Tente","Arceaux + sardines","Sac de couchage","Matelas","Oreiller","Lampe frontale","Lampe / éclairage","Chaises / siège","Serviette microfibre","Sac poubelle","Corde / ficelle","Trousse de toilette"]],
+["🔥 Cuisine & eau",["Réchaud","Cartouche de gaz","Briquet / allumettes","Popote","Gobelet","Couverts","Éponge","Liquide vaisselle","Bouteilles d'eau","Filtre à eau / pastilles","Thermos"]],
+["⚖️ Avant de partir",["Pression pneus","Niveau huile","Niveau liquide de refroidissement","Graissage chaîne","État plaquettes de frein","Éclairage / clignotants","Batterie","Plein d'essence","Vérifier météo","Vérifier itinéraire / routes","Prévenir un proche de l'itinéraire"]],
+["🧭 Navigation & sécurité",["Téléphone chargé","GPS / support téléphone","Câble GPS","Carte hors ligne","Trace GPX","Intercom","Gilet réfléchissant","Trousse de premiers secours","Numéros d'urgence enregistrés"]],
+["👕 Vêtements",["Sous-vêtements","Chaussettes","T-shirts","Pantalon léger","Pull / polaire","Veste pluie","Pantalon pluie","Maillot de bain","Casquette / bonnet","Vêtements pour dormir"]],
+["🌧️ Protection & sacs",["Housse de pluie","Sacs étanches","Sac poubelle renforcé","Housses pour chaussures","Filet / sangles supplémentaires"]],
+["🍽️ Nourriture",["Petit-déjeuner","Repas midi","Repas soir","Barres / encas","Café / thé","Sel / poivre / condiments"]],
+["🧴 Divers",["Lunettes de soleil","Crème solaire","Lunettes de vue / étui","Papier toilette","Lingettes","Gel hydroalcoolique","Chargeur secteur","Multiprise / adaptateur","Petite trousse couture"]]
+];
+
+let state=load();
+let deferredPrompt=null;
+const $=id=>document.getElementById(id);
+
+function makeOuting(name){
+  return {id:crypto.randomUUID(),name,cats:DEFAULT.map(([n,items])=>({id:crypto.randomUUID(),name:n,items:items.map(t=>({id:crypto.randomUUID(),text:t,done:false}))}))};
+}
+function load(){
+  try{
+    const s=JSON.parse(localStorage.getItem(KEY));
+    if(s&&s.outings?.length) return s;
+  }catch(e){}
+  const o=makeOuting("Sortie 1");
+  return {outings:[o],active:o.id};
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function active(){return state.outings.find(o=>o.id===state.active)||state.outings[0]}
+function renderSelect(){
+  const s=$("outingSelect");s.innerHTML="";
+  state.outings.forEach(o=>{const op=document.createElement("option");op.value=o.id;op.textContent=o.name;s.appendChild(op)});
+  s.value=active().id;
+}
+function updateProgress(){
+  const o=active(), all=o.cats.flatMap(c=>c.items), done=all.filter(i=>i.done).length, total=all.length, pct=total?Math.round(done/total*100):0;
+  $("bar").style.width=pct+"%";$("stats").textContent=`${done} / ${total} éléments cochés • ${pct}%`;
+}
+function render(){
+  renderSelect(); updateProgress();
+  const o=active(), root=$("app");root.innerHTML="";
+  o.cats.forEach(c=>{
+    const box=document.createElement("section");box.className="cat";
+    const head=document.createElement("div");head.className="cathead";
+    const title=document.createElement("strong");title.textContent=c.name;
+    const collapse=document.createElement("button");collapse.className="small";collapse.textContent="▾";
+    const edit=document.createElement("button");edit.className="small";edit.textContent="✎";
+    const del=document.createElement("button");del.className="small danger";del.textContent="🗑";
+    head.append(title,collapse,edit,del);box.appendChild(head);
+    const items=document.createElement("div");items.className="items";
+    c.items.forEach(it=>{
+      const row=document.createElement("div");row.className="item";
+      const cb=document.createElement("input");cb.type="checkbox";cb.checked=it.done;
+      const span=document.createElement("span");span.textContent=it.text;if(it.done)span.className="checked";
+      const e=document.createElement("button");e.className="small";e.textContent="✎";
+      const d=document.createElement("button");d.className="small danger";d.textContent="×";
+      cb.onchange=()=>{it.done=cb.checked;save();render()};
+      e.onclick=()=>ask("Modifier l'élément",it.text,v=>{if(v.trim()){it.text=v.trim();save();render()}});
+      d.onclick=()=>{c.items=c.items.filter(x=>x.id!==it.id);save();render()};
+      row.append(cb,span,e,d);items.appendChild(row);
+    });
+    const add=document.createElement("button");add.className="small";add.textContent="＋ Ajouter un élément";
+    add.onclick=()=>ask("Nouvel élément","",v=>{if(v.trim()){c.items.push({id:crypto.randomUUID(),text:v.trim(),done:false});save();render()}});
+    items.appendChild(add);
+    edit.onclick=()=>ask("Modifier la catégorie",c.name,v=>{if(v.trim()){c.name=v.trim();save();render()}});
+    del.onclick=()=>{if(confirm("Supprimer cette catégorie et ses éléments ?")){o.cats=o.cats.filter(x=>x.id!==c.id);save();render()}};
+    collapse.onclick=()=>{items.style.display=items.style.display==="none"?"":"none";collapse.textContent=items.style.display==="none"?"▸":"▾"};
+    box.appendChild(items);root.appendChild(box);
+  });
+  const addCat=document.createElement("button");addCat.className="primary";addCat.style.width="100%";addCat.textContent="＋ Ajouter une catégorie";
+  addCat.onclick=()=>ask("Nouvelle catégorie","",v=>{if(v.trim()){o.cats.push({id:crypto.randomUUID(),name:v.trim(),items:[]});save();render()}});
+  root.appendChild(addCat);
+}
+function ask(title,value,cb){
+  $("modalTitle").textContent=title;$("modalInput").value=value||"";$("modal").classList.add("show");$("modalInput").focus();
+  const done=()=>{$("modal").classList.remove("show");cb($("modalInput").value)};
+  $("okModal").onclick=done;$("cancelModal").onclick=()=>$("modal").classList.remove("show");
+  $("modalInput").onkeydown=e=>{if(e.key==="Enter")done();if(e.key==="Escape")$("modal").classList.remove("show")};
+}
+$("outingSelect").onchange=e=>{state.active=e.target.value;save();render()};
+$("newBtn").onclick=()=>ask("Nom de la nouvelle sortie","Sortie "+(state.outings.length+1),v=>{if(v.trim()){const o=makeOuting(v.trim());state.outings.push(o);state.active=o.id;save();render()}});
+$("renameBtn").onclick=()=>ask("Renommer la sortie",active().name,v=>{if(v.trim()){active().name=v.trim();save();render()}});
+$("duplicateBtn").onclick=()=>{const src=active();const copy=JSON.parse(JSON.stringify(src));copy.id=crypto.randomUUID();copy.name=src.name+" – copie";copy.cats.forEach(c=>{c.id=crypto.randomUUID();c.items.forEach(i=>{i.id=crypto.randomUUID();i.done=false})});state.outings.push(copy);state.active=copy.id;save();render()};
+$("resetBtn").onclick=()=>{if(confirm("Tout décocher dans cette sortie ?")){active().cats.forEach(c=>c.items.forEach(i=>i.done=false));save();render()}};
+$("deleteBtn").onclick=()=>{if(state.outings.length===1){alert("Il faut conserver au moins une sortie.");return} if(confirm("Supprimer cette sortie ?")){state.outings=state.outings.filter(o=>o.id!==state.active);state.active=state.outings[0].id;save();render()}};
+
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;$("installBox").style.display="block"});
+$("installBtn").onclick=async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$("installBox").style.display="none"};
+window.addEventListener("appinstalled",()=>{$("installBox").style.display="none"});
+if("serviceWorker" in navigator) window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.error));
+render();
+</script>
+</body>
+</html>
