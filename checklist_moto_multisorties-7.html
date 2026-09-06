@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#111110">
+<title>Moto + Bivouac — Mes sorties</title>
+<style>
+:root{--bg:#111110;--s:#1c1b19;--s2:#242320;--b:rgba(255,255,255,.09);--b2:rgba(255,255,255,.16);--a:#f0a500;--ad:rgba(240,165,0,.15);--t:#f0ede6;--t2:#9a9690;--t3:#5a5754;--d:#e05050;--r:14px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--t);font-family:Arial,sans-serif;min-height:100vh;overscroll-behavior:none}
+button,input,select{font:inherit}
+header{position:sticky;top:0;z-index:10;background:rgba(17,17,16,.97);padding:env(safe-area-inset-top,0) 12px 0;border-bottom:1px solid var(--b);backdrop-filter:blur(8px)}
+.top{display:flex;align-items:center;gap:6px;padding:12px 2px 8px}.logo{font-weight:700;font-size:18px;flex:1}.logo span{color:var(--a)}
+.btn{font-size:12px;color:var(--t2);background:var(--s);border:1px solid var(--b2);border-radius:99px;padding:7px 9px;cursor:pointer;white-space:nowrap}.primary{background:var(--a);color:var(--bg);border-color:var(--a);font-weight:700}
+.outing{display:flex;gap:7px;padding-bottom:9px}.outing select{flex:1;min-width:0;background:var(--s2);color:var(--t);border:1px solid var(--b2);border-radius:10px;padding:9px;outline:0}.square{width:39px;border:1px solid var(--b2);background:var(--s2);color:var(--t);border-radius:10px;font-size:18px;cursor:pointer}
+.track{height:4px;background:var(--s2);border-radius:99px;overflow:hidden;margin-bottom:7px}.fill{height:100%;background:var(--a);transition:.25s}.label{font-size:11px;color:var(--t3);padding-bottom:9px}
+main{max-width:760px;margin:auto;padding:12px 12px calc(env(safe-area-inset-bottom,0px) + 24px)}.outing-name{font-size:12px;color:var(--t3);margin:0 2px 10px}
+.section{background:var(--s);border:1px solid var(--b);border-radius:var(--r);margin-bottom:10px;overflow:hidden}.head{display:flex;align-items:center;gap:8px;padding:11px 12px;background:var(--s2)}.icon{width:23px;text-align:center}.title{flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--t);font-size:14px;font-weight:700}.badge{font-size:11px;color:var(--t3);background:var(--bg);border:1px solid var(--b);border-radius:99px;padding:3px 8px;white-space:nowrap}.all{color:var(--a);background:var(--ad);border-color:rgba(240,165,0,.3)}
+.ib{width:30px;height:30px;border:0;background:transparent;color:var(--t3);border-radius:50%;cursor:pointer;font-size:16px}.ib:hover{background:rgba(255,255,255,.06);color:var(--t)}
+ul{list-style:none}.item{display:flex;align-items:center;gap:10px;min-height:49px;padding:0 12px;border-top:1px solid var(--b)}.cb{width:23px;height:23px;min-width:23px;border:1.5px solid var(--b2);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer}.cb.on{background:var(--a);border-color:var(--a)}.cb svg{display:none}.cb.on svg{display:block}.item input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--t);font-size:14px;padding:13px 0}.done input{color:var(--t3);text-decoration:line-through}.del{width:29px;height:29px;border:0;border-radius:50%;background:rgba(224,80,80,.1);color:var(--d);font-size:18px;cursor:pointer;opacity:0}.item:hover .del,.item:focus-within .del{opacity:1}
+.add{display:flex;gap:7px;padding:8px 12px;border-top:1px solid var(--b);background:var(--bg)}.add input,.new input{flex:1;min-width:0;background:var(--s2);border:1px solid var(--b);border-radius:9px;color:var(--t);padding:9px 10px;outline:0;font-size:13px}.plus{width:39px;height:39px;border:0;border-radius:50%;background:var(--a);color:var(--bg);font-size:22px;cursor:pointer}.collapsed{display:none}
+.new{background:var(--s);border:1px dashed var(--b2);border-radius:var(--r);padding:13px;margin-bottom:10px}.new label{display:block;font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:9px}.emojis{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}.emoji{width:36px;height:36px;border:1px solid var(--b);border-radius:8px;background:var(--s2);cursor:pointer;font-size:18px}.selected{border-color:var(--a);background:var(--ad)}.newrow{display:flex;gap:7px}.addcat{border:0;border-radius:9px;background:var(--a);color:var(--bg);font-size:13px;font-weight:700;padding:9px 14px}
+.empty{text-align:center;padding:18px;color:var(--t3);font-size:13px}
+.modal{display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:20px}.show{display:flex}.dialog{width:min(450px,100%);background:var(--s);border:1px solid var(--b2);border-radius:16px;padding:18px}.dialog h2{font-size:17px;margin-bottom:8px}.dialog p{font-size:13px;color:var(--t2);line-height:1.45;margin-bottom:14px}.dialog input{width:100%;background:var(--s2);border:1px solid var(--b2);color:var(--t);border-radius:9px;padding:10px;outline:0;margin-bottom:14px}.actions{display:flex;justify-content:flex-end;gap:8px}.actions button{border:1px solid var(--b2);background:var(--s2);color:var(--t);border-radius:9px;padding:9px 13px}.actions .ok{background:var(--a);color:var(--bg);border-color:var(--a);font-weight:700}
+.toast{position:fixed;z-index:100;left:50%;bottom:20px;transform:translate(-50%,15px);opacity:0;background:var(--s2);border:1px solid var(--b2);padding:9px 13px;border-radius:99px;font-size:12px;transition:.2s}.toast.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:520px){.del{opacity:1}.top{gap:4px}.btn{padding:7px 7px}.logo{font-size:16px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="top">
+  <div class="logo">Moto <span>+</span> Bivouac</div>
+  <button class="btn" id="rename">Renommer</button>
+  <button class="btn" id="duplicate">Dupliquer</button>
+  <button class="btn primary" id="reset">Tout décocher</button>
+ </div>
+ <div class="outing">
+  <select id="select"></select>
+  <button class="square" id="newOut" title="Nouvelle sortie">＋</button>
+  <button class="square" id="deleteOut" title="Supprimer la sortie">🗑</button>
+ </div>
+ <div class="track"><div class="fill" id="fill"></div></div>
+ <div class="label" id="label">0 / 0 cochés</div>
+</header>
+<main id="root"></main>
+
+<div class="modal" id="modal">
+ <div class="dialog">
+  <h2 id="mtitle"></h2><p id="mtext"></p>
+  <input id="minput" type="text" autocomplete="off">
+  <div class="actions"><button id="cancel">Annuler</button><button class="ok" id="confirm">Valider</button></div>
+ </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const ICONS=['📄','🏍️','🏕️','🔥','⚖️','🧭','👕','🌧️','🍽️','🧴','📋','🔧','💊','📦','🗺️','⛺','🛠️','⛽'];
+const DEFAULT=[
+['📄','Papiers & essentiels',['Permis de conduire','Carte grise','Assurance','Carte bancaire + un peu de cash','Carte d’identité / passeport']],
+['🏍️','Moto & équipement',['Casque + gants','Veste/pantalon moto','Combinaison de pluie / gilet jaune','Kit réparation crevaison','Mini compresseur / bombe','Outils de base','Lubrifiant chaîne','Support téléphone / GPS','Câble chargeur USB moto','Antivol']],
+['🏕️','Bivouac',['Tente','Sac de couchage','Matelas / oreiller','Patch de réparation matelas','Lampe frontale x 2','Bâche / protection sol','Couverture de survie x 2','Tapis de pique-nique','Chaise pliante très compacte']],
+['🔥','Cuisine & eau',['Réchaud + gaz','Popote / couverts','Briquet + allumettes','Gourde / poche à eau','Gourde filtrante']],
+['⚖️','Avant de partir',['Révision moto : pneus, freins, niveaux, pression','Test du matériel','Itinéraire approximatif','Vérif météo']],
+['🧭','Navigation & sécurité',['Téléphone + GPS offline','Batterie externe','Carte papier','Couteau / multi-outil','Trousse de secours','Pansements classiques + ampoules','Compresses stériles','Désinfectant','Bande / strap','Antalgiques','Pince à tiques','Ciseaux','Gants jetables','Couverture de survie']],
+['👕','Vêtements',['Sous-vêtements','Chaussettes','Polaire / doudoune','Vêtements légers','Chaussures légères','Bonnet / gants','Lunettes de soleil','Casquette']],
+['🌧️','Protection & sacs',['Sacs étanches','Housse pluie','Sacs poubelle']],
+['🍽️','Nourriture',['Repas simples','Repas déshydratés','Snacks : barres, fruits secs','Thé / chocolat','Petit déjeuner','Épices','Conserves']],
+['🧴','Divers',['Papier toilette','Lingettes','Crème solaire','Anti-moustiques','Brosse à dents + hygiène','Douche solaire']]
+];
+function sections(){
+ return DEFAULT.map(x=>({icon:x[0],title:x[1],open:true,items:x[2].map(t=>({text:t,checked:false}))}));
+}
+function makeOut(name){return {name,sections:sections()}}
+function load(){
+ try{let x=JSON.parse(localStorage.getItem('moto-multisorties-v1'));if(x&&x.outings?.length)return x}catch(e){}
+ return {active:0,outings:[makeOut('Ma prochaine sortie')]};
+}
+let state=load(),icon='📋',action=null;
+function save(){localStorage.setItem('moto-multisorties-v1',JSON.stringify(state))}
+function cur(){return state.outings[state.active]}
+function toast(s){let t=document.getElementById('toast');t.textContent=s;t.classList.add('on');clearTimeout(window.tt);window.tt=setTimeout(()=>t.classList.remove('on'),1400)}
+function progress(){
+ let all=0,done=0;cur().sections.forEach(s=>{all+=s.items.length;done+=s.items.filter(i=>i.checked).length});
+ document.getElementById('fill').style.width=(all?done/all*100:0)+'%';document.getElementById('label').textContent=done+' / '+all+' cochés';
+}
+function refreshSelect(){
+ let q=document.getElementById('select');q.innerHTML='';state.outings.forEach((o,i)=>{let op=document.createElement('option');op.value=i;op.textContent=o.name;q.appendChild(op)});q.value=state.active;
+}
+function modal(title,text,value,fn){
+ document.getElementById('mtitle').textContent=title;document.getElementById('mtext').textContent=text;
+ let i=document.getElementById('minput');i.value=value;i.style.display='block';action=fn;document.getElementById('modal').classList.add('show');setTimeout(()=>{i.focus();i.select()},30);
+}
+function close(){document.getElementById('modal').classList.remove('show');action=null}
+function render(){
+ refreshSelect();let root=document.getElementById('root');root.innerHTML='';
+ let out=cur(),name=document.createElement('div');name.className='outing-name';name.textContent='SORTIE : '+out.name;root.appendChild(name);
+ out.sections.forEach((s,si)=>{
+  let box=document.createElement('section');box.className='section',head=document.createElement('div');head.className='head';
+  let ic=document.createElement('span');ic.className='icon';ic.textContent=s.icon;
+  let ti=document.createElement('input');ti.className='title';ti.value=s.title;ti.onchange=()=>{s.title=ti.value.trim()||'Sans titre';save()};
+  let ba=document.createElement('span');ba.className='badge';
+  let ds=document.createElement('button');ds.className='ib';ds.textContent='×';ds.title='Supprimer';
+  let tg=document.createElement('button');tg.className='ib';tg.textContent=s.open?'▴':'▾';
+  function badge(){let d=s.items.filter(i=>i.checked).length,t=s.items.length;ba.textContent=d+' / '+t;ba.className='badge'+(d===t&&t?' all':'')}
+  badge();ds.onclick=()=>{if(confirm('Supprimer « '+s.title+' » ?')){out.sections.splice(si,1);save();render();toast('Catégorie supprimée')}};tg.onclick=()=>{s.open=!s.open;save();render()};
+  head.append(ic,ti,ba,ds,tg);box.appendChild(head);
+  let ul=document.createElement('ul');ul.className=s.open?'':'collapsed';
+  s.items.forEach((it,ii)=>{
+   let li=document.createElement('li');li.className='item'+(it.checked?' done':'');
+   let cb=document.createElement('div');cb.className='cb'+(it.checked?' on':'');cb.innerHTML='<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><polyline points="2,6.5 5,9.5 11,3.5" stroke="#111110" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+   cb.onclick=()=>{it.checked=!it.checked;li.classList.toggle('done',it.checked);cb.classList.toggle('on',it.checked);badge();save();progress()};
+   let inp=document.createElement('input');inp.value=it.text;inp.onchange=()=>{it.text=inp.value;save()};
+   let del=document.createElement('button');del.className='del';del.textContent='×';del.onclick=()=>{s.items.splice(ii,1);save();render()};
+   li.append(cb,inp,del);ul.appendChild(li);
+  });
+  if(!s.items.length){let e=document.createElement('li');e.className='empty';e.textContent='Aucun élément — ajoute-en un ci-dessous.';ul.appendChild(e)}
+  let add=document.createElement('div');add.className='add',ai=document.createElement('input');ai.placeholder='Ajouter un élément…';
+  let ab=document.createElement('button');ab.className='plus';ab.textContent='+';
+  let go=()=>{let v=ai.value.trim();if(!v)return;s.items.push({text:v,checked:false});save();render();toast('Élément ajouté')};ab.onclick=go;ai.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();go()}};
+  add.append(ai,ab);box.append(ul,add);root.appendChild(box);
+ });
+ newCategory(root);progress();
+}
+function newCategory(root){
+ let area=document.createElement('div');area.className='new',lab=document.createElement('label');lab.textContent='Nouvelle catégorie';area.appendChild(lab);
+ let er=document.createElement('div');er.className='emojis';ICONS.forEach(x=>{let b=document.createElement('button');b.className='emoji'+(icon===x?' selected':'');b.textContent=x;b.onclick=()=>{icon=x;er.querySelectorAll('button').forEach(z=>z.classList.toggle('selected',z===b))};er.appendChild(b)});
+ let row=document.createElement('div');row.className='newrow',inp=document.createElement('input');inp.placeholder='Nom de la catégorie…';let b=document.createElement('button');b.className='addcat';b.textContent='Ajouter';
+ let go=()=>{let v=inp.value.trim();if(!v)return;cur().sections.push({icon,title:v,open:true,items:[]});save();render();toast('Catégorie ajoutée')};b.onclick=go;inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();go()}};row.append(inp,b);area.append(er,row);root.appendChild(area);
+}
+document.getElementById('select').onchange=e=>{state.active=+e.target.value;save();render()};
+document.getElementById('newOut').onclick=()=>modal('Nouvelle sortie','Une nouvelle checklist complète sera créée.', 'Nouvelle sortie',n=>{state.outings.push(makeOut(n.trim()||'Nouvelle sortie'));state.active=state.outings.length-1;save();render();toast('Nouvelle sortie créée')});
+document.getElementById('rename').onclick=()=>modal('Renommer la sortie','Seul le nom sera modifié.',cur().name,n=>{n=n.trim();if(n){cur().name=n;save();render();toast('Sortie renommée')}});
+document.getElementById('duplicate').onclick=()=>modal('Dupliquer la sortie','La copie garde les catégories et éléments, avec toutes les cases décochées.',cur().name+' — copie',n=>{let c=JSON.parse(JSON.stringify(cur()));c.name=n.trim()||'Nouvelle sortie';c.sections.forEach(s=>s.items.forEach(i=>i.checked=false));state.outings.push(c);state.active=state.outings.length-1;save();render();toast('Sortie dupliquée')});
+document.getElementById('deleteOut').onclick=()=>{if(state.outings.length<2){toast('Il faut garder au moins une sortie');return}if(confirm('Supprimer « '+cur().name+' » définitivement ?')){state.outings.splice(state.active,1);state.active=Math.max(0,state.active-1);save();render();toast('Sortie supprimée')}};
+document.getElementById('reset').onclick=()=>{if(confirm('Décocher toutes les cases de « '+cur().name+' » ?')){cur().sections.forEach(s=>s.items.forEach(i=>i.checked=false));save();render();toast('Tout est décoché')}};
+document.getElementById('cancel').onclick=close;document.getElementById('confirm').onclick=()=>{let v=document.getElementById('minput').value;if(action)action(v);close()};document.getElementById('minput').onkeydown=e=>{if(e.key==='Enter')document.getElementById('confirm').click()};document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')close()};
+render();
+</script>
+</body>
+</html>
